@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MapComponent from './MapComponent';
 
 const ItineraryView = ({ trip }) => {
     const [activeDay, setActiveDay] = useState(1);
@@ -110,68 +111,9 @@ const ItineraryView = ({ trip }) => {
                 </div>
             </div>
 
-            {/* Right Column: Recommendations */}
-            <div className="lg:col-span-7 space-y-6">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                        <h2 className="text-xl font-bold text-gray-900">Recommended Activities</h2>
-                        <div className="flex gap-2 overflow-x-auto pb-2">
-                            {['Price Range', 'Duration', 'Popularity', 'Category'].map(filter => (
-                                <button key={filter} className="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 whitespace-nowrap">
-                                    {filter} <i className="fa-solid fa-chevron-down ml-1 text-[10px]"></i>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        {recommendations.map(item => (
-                            <div key={item.id} className="flex flex-col md:flex-row gap-4 p-4 rounded-xl border border-gray-100 hover:shadow-md transition bg-white group">
-                                <div className="w-full md:w-48 h-32 md:h-auto shrink-0 rounded-lg overflow-hidden relative">
-                                    <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-                                    <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-bold text-purple-600 uppercase">
-                                        Viator Partner
-                                    </div>
-                                </div>
-                                <div className="flex-grow flex flex-col justify-between">
-                                    <div>
-                                        <h3 className="font-bold text-gray-900 mb-1 line-clamp-1">{item.title}</h3>
-                                        <p className="text-sm text-gray-500 mb-2 line-clamp-2">Explore the world's largest art museum with an expert guide. See the Mona Lisa, Venus de Milo, and other masterpieces.</p>
-                                        <div className="flex items-center gap-2 text-xs mb-3">
-                                            <div className="flex text-yellow-400">
-                                                {[...Array(5)].map((_, i) => (
-                                                    <i key={i} className={`fa-solid fa-star ${i < Math.floor(item.rating) ? '' : 'text-gray-200'}`}></i>
-                                                ))}
-                                            </div>
-                                            <span className="font-bold text-gray-900">{item.rating}</span>
-                                            <span className="text-gray-400">({item.reviews.toLocaleString()} reviews)</span>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2 mb-3">
-                                            {item.tags.map(tag => (
-                                                <span key={tag} className="text-[10px] bg-gray-100 text-gray-600 px-2 py-1 rounded-full flex items-center gap-1">
-                                                    {tag === 'Skip-the-line' && <i className="fa-solid fa-person-running"></i>}
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                            <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-1 rounded-full flex items-center gap-1">
-                                                <i className="fa-regular fa-clock"></i> {item.duration}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center justify-between mt-2 pt-3 border-t border-gray-50">
-                                        <div>
-                                            <span className="text-xs text-gray-400">From</span>
-                                            <span className="text-lg font-bold text-gray-900 ml-1">${item.price}</span>
-                                        </div>
-                                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                                            <i className="fa-solid fa-plus"></i> Add to Itinerary
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+            {/* Right Column: Map */}
+            <div className="lg:col-span-7 space-y-6 h-[600px] sticky top-8">
+                <MapComponent activities={currentDayActivities} day={activeDay} />
             </div>
         </div>
     );
