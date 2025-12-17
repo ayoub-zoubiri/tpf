@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import api from '../api/axios';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from './Navbar';
@@ -10,8 +12,8 @@ const TripPlanner = () => {
     const { user } = useAuth();
     const [formData, setFormData] = useState({
         destination: '',
-        startDate: '',
-        endDate: '',
+        startDate: null,
+        endDate: null,
         budget: 'Moderate',
         interests: []
     });
@@ -175,28 +177,38 @@ const TripPlanner = () => {
                                 <label className="block text-base font-semibold text-gray-900 mb-3">When are you traveling?</label>
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <div className="relative">
-                                        <span className="absolute left-4 top-2 text-xs text-gray-500">Check-in</span>
-                                        <input 
-                                            type="date" 
-                                            name="startDate"
-                                            value={formData.startDate}
-                                            onChange={handleChange}
-                                            className="w-full pl-4 pr-10 pt-6 pb-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-700"
+                                        <span className="absolute left-4 top-2 text-xs text-gray-500 z-10">Check-in</span>
+                                        <DatePicker
+                                            selected={formData.startDate}
+                                            onChange={(date) => setFormData(prev => ({ ...prev, startDate: date }))}
+                                            selectsStart
+                                            startDate={formData.startDate}
+                                            endDate={formData.endDate}
+                                            minDate={new Date()}
+                                            dateFormat="MMMM d, yyyy"
+                                            className="w-full pl-4 pr-10 pt-6 pb-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-700 cursor-pointer"
+                                            wrapperClassName="w-full"
+                                            placeholderText="Select Date"
                                             required
                                         />
-                                        <i className="fa-regular fa-calendar absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                        <i className="fa-regular fa-calendar absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none z-10"></i>
                                     </div>
                                     <div className="relative">
-                                        <span className="absolute left-4 top-2 text-xs text-gray-500">Check-out</span>
-                                        <input 
-                                            type="date" 
-                                            name="endDate"
-                                            value={formData.endDate}
-                                            onChange={handleChange}
-                                            className="w-full pl-4 pr-10 pt-6 pb-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-700"
+                                        <span className="absolute left-4 top-2 text-xs text-gray-500 z-10">Check-out</span>
+                                        <DatePicker
+                                            selected={formData.endDate}
+                                            onChange={(date) => setFormData(prev => ({ ...prev, endDate: date }))}
+                                            selectsEnd
+                                            startDate={formData.startDate}
+                                            endDate={formData.endDate}
+                                            minDate={formData.startDate || new Date()}
+                                            dateFormat="MMMM d, yyyy"
+                                            className="w-full pl-4 pr-10 pt-6 pb-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-700 cursor-pointer"
+                                            wrapperClassName="w-full"
+                                            placeholderText="Select Date"
                                             required
                                         />
-                                        <i className="fa-regular fa-calendar absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                        <i className="fa-regular fa-calendar absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none z-10"></i>
                                     </div>
                                 </div>
                             </div>
@@ -250,10 +262,25 @@ const TripPlanner = () => {
 
                 {step === 2 && (
                     <div className="bg-white rounded-2xl shadow-xl p-12 text-center min-h-[400px] flex flex-col items-center justify-center">
-                        <div className="relative w-24 h-24 mb-8">
+                        <div className="relative w-32 h-32 mb-8">
+                            {/* Track */}
                             <div className="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
-                            <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
-                            <i className="fa-solid fa-plane absolute inset-0 flex items-center justify-center text-blue-600 text-2xl animate-pulse"></i>
+                            
+                            {/* Rotating Container */}
+                            <div className="absolute inset-0 animate-spin" style={{ animationDuration: '1.5s' }}>
+                                {/* Active Trail (Half Circle) */}
+                                <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-blue-600 border-r-blue-600 border-b-transparent border-l-transparent transform rotate-[-45deg]"></div>
+                                
+                                {/* Plane Icon - Leading the trail */}
+                                <div className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-[20%] rotate-45">
+                                    <i className="fa-solid fa-plane text-blue-600 text-2xl drop-shadow-sm"></i>
+                                </div>
+                            </div>
+                            
+                            {/* Center Logo */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <img src="/logo.png" alt="Toplago" className="w-16 h-16 object-contain animate-pulse" />
+                            </div>
                         </div>
                         <h2 className="text-2xl font-bold text-gray-900 mb-2">Crafting your perfect itinerary...</h2>
                         <p className="text-gray-500 max-w-md">Our AI is analyzing your preferences to build the best trip to {formData.destination}.</p>

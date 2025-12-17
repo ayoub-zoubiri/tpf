@@ -7,7 +7,10 @@ const Footer = () => {
             <div className="container mx-auto px-6">
                 <div className="grid md:grid-cols-4 gap-8 mb-8">
                     <div>
-                        <div className="text-white text-2xl font-bold mb-4">Toplago</div>
+                        <div className="flex items-center gap-2 mb-4">
+                            <img src="/logo.png" alt="Toplago" className="h-8 w-8 object-contain bg-white rounded-full p-1" />
+                            <span className="text-white text-2xl font-bold">Toplago</span>
+                        </div>
                         <p className="text-sm mb-4">Your AI-powered travel companion for planning unforgettable journeys around the world.</p>
                         <div className="flex gap-4">
                             <a href="#" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 transition"><i className="fa-brands fa-facebook-f"></i></a>

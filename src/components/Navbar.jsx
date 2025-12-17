@@ -9,9 +9,7 @@ const Navbar = () => {
         <header className="bg-white border-b border-gray-100 py-4">
             <div className="container mx-auto px-6 flex justify-between items-center">
                 <Link to="/" className="flex items-center gap-2">
-                     <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                        <i className="fa-solid fa-plane"></i>
-                     </div>
+                     <img src="/logo.png" alt="Toplago" className="w-10 h-10 object-contain" />
                      <span className="text-xl font-bold text-gray-800">Toplago</span>
                 </Link>
                 <div className="flex items-center gap-4">

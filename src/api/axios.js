@@ -1,12 +1,12 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://tpb.up.railway.app/api',
+    baseURL: 'http://127.0.0.1:8000/api',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     },
-    withCredentials: true
+    withCredentials: false
 });
 
 api.interceptors.request.use((config) => {
