@@ -154,6 +154,12 @@ const TripPlanner = () => {
 
                 {step === 1 && (
                     <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+                        {error && (
+                            <div className="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl flex items-center gap-3 animate-fade-in">
+                                <i className="fa-solid fa-circle-exclamation text-xl"></i>
+                                <span className="font-medium">{error}</span>
+                            </div>
+                        )}
                         <form onSubmit={handleSubmit} className="space-y-8">
                             {/* Destination */}
                             <div>
