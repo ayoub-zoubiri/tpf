@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import api from '../api/axios';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -22,6 +22,15 @@ const TripPlanner = () => {
     const [step, setStep] = useState(1); // 1: Details, 2: AI Generation, 3: Your Itinerary
     const [showAuthModal, setShowAuthModal] = useState(false);
 
+    // City autocomplete state
+    const [citySuggestions, setCitySuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [isLoadingCities, setIsLoadingCities] = useState(false);
+    const [selectedCityIndex, setSelectedCityIndex] = useState(-1);
+    const [selectedCity, setSelectedCity] = useState(null);
+    const suggestionRef = useRef(null);
+    const inputRef = useRef(null);
+
     const budgetOptions = [
         { id: 'Budget-friendly', label: 'Budget', range: '$50-100/day', icon: 'fa-wallet', color: 'text-green-500' },
         { id: 'Moderate', label: 'Moderate', range: '$100-200/day', icon: 'fa-credit-card', color: 'text-blue-500' },
@@ -37,6 +46,89 @@ const TripPlanner = () => {
         { id: 'Photography', label: 'Photography', icon: 'fa-camera', color: 'text-pink-500' },
     ];
 
+    // Debounce function for city search
+    const debounce = (func, wait) => {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    };
+
+    // Search cities with debounce
+    const searchCities = useCallback(
+        debounce(async (query) => {
+            if (query.length < 2) {
+                setCitySuggestions([]);
+                setShowSuggestions(false);
+                return;
+            }
+
+            setIsLoadingCities(true);
+            try {
+                const response = await api.get(`/cities/search?q=${encodeURIComponent(query)}&limit=8`);
+                setCitySuggestions(response.data);
+                setShowSuggestions(true);
+                setSelectedCityIndex(-1);
+            } catch (err) {
+                console.error('Error searching cities:', err);
+                setCitySuggestions([]);
+            } finally {
+                setIsLoadingCities(false);
+            }
+        }, 300),
+        []
+    );
+
+    // Handle city selection
+    const handleCitySelect = (city) => {
+        setSelectedCity(city);
+        setFormData(prev => ({ ...prev, destination: city.label }));
+        setShowSuggestions(false);
+        setCitySuggestions([]);
+    };
+
+    // Handle keyboard navigation in suggestions
+    const handleKeyDown = (e) => {
+        if (!showSuggestions || citySuggestions.length === 0) return;
+
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                setSelectedCityIndex(prev => 
+                    prev < citySuggestions.length - 1 ? prev + 1 : 0
+                );
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                setSelectedCityIndex(prev => 
+                    prev > 0 ? prev - 1 : citySuggestions.length - 1
+                );
+                break;
+            case 'Enter':
+                e.preventDefault();
+                if (selectedCityIndex >= 0) {
+                    handleCitySelect(citySuggestions[selectedCityIndex]);
+                }
+                break;
+            case 'Escape':
+                setShowSuggestions(false);
+                break;
+        }
+    };
+
+    // Close suggestions when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (suggestionRef.current && !suggestionRef.current.contains(e.target) &&
+                inputRef.current && !inputRef.current.contains(e.target)) {
+                setShowSuggestions(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     const handleInterestToggle = (interest) => {
         setFormData(prev => {
             const newInterests = prev.interests.includes(interest)
@@ -49,6 +141,12 @@ const TripPlanner = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        
+        // Trigger city search for destination field
+        if (name === 'destination') {
+            setSelectedCity(null);
+            searchCities(value);
+        }
     };
 
     const calculateDuration = () => {
@@ -161,21 +259,71 @@ const TripPlanner = () => {
                             </div>
                         )}
                         <form onSubmit={handleSubmit} className="space-y-8">
-                            {/* Destination */}
+                            {/* Destination with Autocomplete */}
                             <div>
                                 <label className="block text-base font-semibold text-gray-900 mb-3">Where do you want to go?</label>
                                 <div className="relative">
                                     <input 
+                                        ref={inputRef}
                                         type="text" 
                                         name="destination"
                                         value={formData.destination}
                                         onChange={handleChange}
-                                        placeholder="Enter your destination (e.g., Paris, Tokyo, New York)" 
+                                        onKeyDown={handleKeyDown}
+                                        onFocus={() => formData.destination.length >= 2 && citySuggestions.length > 0 && setShowSuggestions(true)}
+                                        placeholder="Start typing a city name..." 
                                         className="w-full pl-6 pr-12 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-700 placeholder-gray-400"
+                                        autoComplete="off"
                                         required
                                     />
-                                    <i className="fa-solid fa-location-dot absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                    {isLoadingCities ? (
+                                        <i className="fa-solid fa-spinner fa-spin absolute right-6 top-1/2 transform -translate-y-1/2 text-blue-500"></i>
+                                    ) : selectedCity ? (
+                                        <img 
+                                            src={selectedCity.flag_url} 
+                                            alt={selectedCity.country}
+                                            className="absolute right-6 top-1/2 transform -translate-y-1/2 w-6 h-4 object-cover rounded shadow-sm"
+                                        />
+                                    ) : (
+                                        <i className="fa-solid fa-location-dot absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                    )}
+                                    
+                                    {/* Autocomplete Dropdown */}
+                                    {showSuggestions && citySuggestions.length > 0 && (
+                                        <div 
+                                            ref={suggestionRef}
+                                            className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-2xl overflow-hidden animate-fade-in"
+                                        >
+                                            {citySuggestions.map((city, index) => (
+                                                <button
+                                                    key={city.id}
+                                                    type="button"
+                                                    onClick={() => handleCitySelect(city)}
+                                                    className={`w-full px-4 py-3 flex items-center gap-4 hover:bg-blue-50 transition text-left ${
+                                                        index === selectedCityIndex ? 'bg-blue-50' : ''
+                                                    } ${index !== citySuggestions.length - 1 ? 'border-b border-gray-100' : ''}`}
+                                                >
+                                                    <img 
+                                                        src={city.flag_url} 
+                                                        alt={city.country}
+                                                        className="w-8 h-5 object-cover rounded shadow-sm flex-shrink-0"
+                                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                                    />
+                                                    <div className="flex-grow min-w-0">
+                                                        <div className="font-medium text-gray-900 truncate">{city.city}</div>
+                                                        <div className="text-sm text-gray-500 truncate">{city.country}</div>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
+                                {selectedCity && (
+                                    <p className="mt-2 text-sm text-green-600 flex items-center gap-2">
+                                        <i className="fa-solid fa-check-circle"></i>
+                                        <span>{selectedCity.flag_emoji} {selectedCity.city}, {selectedCity.country}</span>
+                                    </p>
+                                )}
                             </div>
 
                             {/* Dates */}
