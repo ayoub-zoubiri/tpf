@@ -23,6 +23,29 @@ const MapBounds = ({ markers }) => {
     return null;
 };
 
+// Fix map rendering issues on resize or layout change
+const MapInvalidator = () => {
+    const map = useMap();
+    useEffect(() => {
+        // Invalidate size immediately
+        map.invalidateSize();
+        
+        // And after a short delay to account for CSS transitions
+        const timer = setTimeout(() => {
+            map.invalidateSize();
+        }, 400);
+
+        const handleResize = () => map.invalidateSize();
+        window.addEventListener('resize', handleResize);
+        
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [map]);
+    return null;
+};
+
 // Get marker color based on time
 const getMarkerColor = (time) => {
     const t = (time || '').toLowerCase();
@@ -141,6 +164,7 @@ const MapComponent = ({ activities, day, destination }) => {
                     url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                 />
                 
+                <MapInvalidator />
                 <MapBounds markers={processedActivities} />
 
                 {/* Route line */}

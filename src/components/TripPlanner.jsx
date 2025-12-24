@@ -234,7 +234,7 @@ const TripPlanner = () => {
                     </div>
                 </div>
 
-                <div className="container mx-auto px-6 py-8 max-w-3xl">
+                <div className={`px-6 py-8 mx-auto ${step === 3 ? 'w-full' : 'container max-w-3xl'}`}>
                     {step === 1 && (
                         <div className="bg-white rounded-2xl p-6 md:p-8 border border-slate-100">
                             {error && (
@@ -398,7 +398,7 @@ const TripPlanner = () => {
                     )}
 
                     {step === 3 && result && (
-                        <div className="max-w-6xl mx-auto">
+                        <div className="w-full">
                             {/* Trip Header Card */}
                             <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-6">
                                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">

@@ -68,7 +68,7 @@ const TripDetails = () => {
             <Navbar />
 
             <main className="flex-grow pt-20">
-                <div className="container mx-auto px-6 py-8 max-w-5xl">
+                <div className="w-full px-6 py-8 mx-auto">
                     {/* Back Link */}
                     <Link to="/mytrips" className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 font-medium mb-6 transition">
                         <i className="fa-solid fa-arrow-left text-sm"></i> Back to My Trips

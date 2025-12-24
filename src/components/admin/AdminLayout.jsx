@@ -1,12 +1,24 @@
 import React, { useState } from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const AdminLayout = () => {
-    const { user, logout } = useAuth();
+    const { user, logout, loading } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    if (loading) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-slate-50">
+                <i className="fa-solid fa-spinner animate-spin text-blue-600 text-3xl"></i>
+            </div>
+        );
+    }
+
+    if (!user || user.role !== 'admin') {
+        return <Navigate to="/login" replace />;
+    }
 
     const handleLogout = () => {
         logout();
