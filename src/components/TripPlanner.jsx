@@ -136,7 +136,8 @@ const TripPlanner = () => {
         if (!formData.startDate || !formData.endDate) return 3;
         const diffTime = Math.abs(new Date(formData.endDate) - new Date(formData.startDate));
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-        return diffDays > 0 ? diffDays : 1;
+        // Add 1 to include both start and end dates (Dec 25-27 = 3 days, not 2)
+        return diffDays > 0 ? diffDays + 1 : 1;
     };
 
     const handleSubmit = async (e) => {
@@ -153,7 +154,8 @@ const TripPlanner = () => {
                 budget: formData.budget,
                 interests: formData.interests.join(', ')
             });
-            if (response.status === 200) {
+            // Backend returns 201 for successful creation
+            if (response.status === 200 || response.status === 201) {
                 setResult(response.data);
                 setStep(3);
             } else {
@@ -161,7 +163,20 @@ const TripPlanner = () => {
                 setStep(1);
             }
         } catch (err) {
-            setError('An error occurred while generating the itinerary.');
+            console.error('Trip generation error:', err);
+            console.error('Full response data:', err.response?.data);
+            // Extract meaningful error message from the API response
+            const details = err.response?.data?.details;
+            let errorMessage = err.response?.data?.error 
+                || err.response?.data?.message 
+                || err.message 
+                || 'An error occurred while generating the itinerary.';
+            
+            // Append details if available (in debug mode)
+            if (details) {
+                errorMessage += ` (${details})`;
+            }
+            setError(errorMessage);
             setStep(1);
         }
     };

@@ -48,7 +48,21 @@ export const AuthProvider = ({ children }) => {
             return { success: true };
         } catch (error) {
             console.error("Registration failed", error);
-            return { success: false, error: error.response?.data?.message || 'Registration failed' };
+            // Extract specific validation errors if available
+            const responseData = error.response?.data;
+            let errorMessage = 'Registration failed';
+            
+            if (responseData?.errors) {
+                // Get the first validation error message
+                const firstErrorKey = Object.keys(responseData.errors)[0];
+                if (firstErrorKey && responseData.errors[firstErrorKey][0]) {
+                    errorMessage = responseData.errors[firstErrorKey][0];
+                }
+            } else if (responseData?.message) {
+                errorMessage = responseData.message;
+            }
+            
+            return { success: false, error: errorMessage };
         }
     };
 

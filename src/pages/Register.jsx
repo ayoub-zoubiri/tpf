@@ -15,8 +15,15 @@ const Register = () => {
         e.preventDefault();
         setError('');
         
-        if (password.length < 6) {
-            setError('Password must be at least 6 characters');
+        // Validate password matches backend requirements
+        if (password.length < 8) {
+            setError('Password must be at least 8 characters');
+            return;
+        }
+        
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+        if (!passwordRegex.test(password)) {
+            setError('Password must contain at least one uppercase letter, one lowercase letter, and one number');
             return;
         }
         
@@ -98,7 +105,7 @@ const Register = () => {
                                 value={password} 
                                 onChange={(e) => setPassword(e.target.value)} 
                                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-sm"
-                                placeholder="Password (min. 6 characters)"
+                                placeholder="Password (8+ chars, A-Z, a-z, 0-9)"
                                 required 
                             />
                         </div>
