@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 
 // Sub-components
 import NavLogo from './navbar/NavLogo';
-
+import NavLinks from './navbar/NavLinks';
 import UserMenu from './navbar/UserMenu';
 import MobileMenu from './navbar/MobileMenu';
 
@@ -39,6 +39,8 @@ const Navbar = () => {
             <div className="container mx-auto px-6">
                 <div className="h-16 flex items-center justify-between">
                     <NavLogo scrolled={scrolled} isHome={isHome} />
+                    
+                    <NavLinks scrolled={scrolled} isHome={isHome} />
                     
 
 

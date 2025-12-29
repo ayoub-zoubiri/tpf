@@ -6,7 +6,7 @@ import Footer from '../components/layout/Footer';
 
 // Sub-components
 import AuthModal from '../components/trip-planner/AuthModal';
-import HeroSection from '../components/trip-planner/HeroSection';
+
 import TripForm from '../components/trip-planner/TripForm';
 import LoadingState from '../components/trip-planner/LoadingState';
 import TripResults from '../components/trip-planner/TripResults';
@@ -19,9 +19,7 @@ const TripPlanner = () => {
         plannerData, 
         setPlannerData, 
         generatedTrip, 
-        plannerLoading, // Note: LoadingState component uses this implicitly via step logic usually, but here we can use it if needed. 
-                       // Actually, the original code used step === 2 for loading. 
-                       // Our context sets step to 2 when loading. So we rely on plannerStep.
+        plannerLoading, 
         plannerError, 
         generateTrip,
         resetPlanner
@@ -46,7 +44,7 @@ const TripPlanner = () => {
             {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
 
             <main className="flex-grow pt-20">
-                <HeroSection step={plannerStep} />
+              
 
                 <div className={`px-6 py-8 mx-auto ${plannerStep === 3 ? 'w-full' : 'container max-w-3xl'}`}>
                     {plannerStep === 1 && ( 

@@ -4,15 +4,13 @@ const HowItWorks = () => {
     return (
         <section className="py-16 bg-white">
             <div className="container mx-auto px-6">
-                {/* Section Header */}
+               
                 <div className="text-center mb-10">
                     <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3">
                         Your trip in minutes, not weeks
                     </h2>
                     <p className="text-slate-500">Plan your next trip with AI and save hours of research</p>
                 </div>
-
-                {/* Steps - Horizontal on desktop */}
                 <div className="grid md:grid-cols-4 gap-6 max-w-4xl mx-auto">
                     {[
                         { step: '1', title: 'Tell me where', desc: 'Enter any destination', icon: 'fa-location-dot' },
