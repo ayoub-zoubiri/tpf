@@ -28,16 +28,10 @@ const BlogsTable = ({ blogs, onEdit, onDelete }) => {
                             <td className="p-4 text-slate-600 text-sm">{blog.author}</td>
                             <td className="p-4 text-slate-400 text-xs">{new Date(blog.created_at).toLocaleDateString()}</td>
                             <td className="p-4 text-right">
-                                <button 
-                                    onClick={() => onEdit(blog)}
-                                    className="text-slate-400 hover:text-blue-600 p-2 transition"
-                                >
+                                <button onClick={() => onEdit(blog)} className="text-slate-400 hover:text-blue-600 p-2 transition" >
                                     <i className="fa-solid fa-pen"></i>
                                 </button>
-                                <button 
-                                    onClick={() => onDelete(blog.id)}
-                                    className="text-slate-400 hover:text-red-600 p-2 transition"
-                                >
+                                <button onClick={() => onDelete(blog.id)}className="text-slate-400 hover:text-red-600 p-2 transition">
                                     <i className="fa-solid fa-trash"></i>
                                 </button>
                             </td>

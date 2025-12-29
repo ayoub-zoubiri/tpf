@@ -36,10 +36,7 @@ const ItineraryView = ({ trip }) => {
                         <ActivityCard key={index} activity={activity} />
                     ))}
                     
-                    {/* Add Activity */}
-                    <button className="w-full py-4 bg-white border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 font-medium hover:border-blue-400 hover:text-blue-600 transition flex items-center justify-center gap-2">
-                        <i className="fa-solid fa-plus"></i> Add Activity
-                    </button>
+
                 </div>
             </div>
         </div>
