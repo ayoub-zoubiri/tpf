@@ -8,7 +8,7 @@ const Hero = () => {
       <div className="absolute inset-0 w-full h-full">
         <video autoPlay loop muted className="w-full h-full object-cover">
           <source
-            src="https://videos.pexels.com/video-files/2252797/2252797-uhd_3840_2160_30fps.mp4"
+            src="https://videos.pexels.com/video-files/2099568/2099568-hd_1920_1080_30fps.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.
